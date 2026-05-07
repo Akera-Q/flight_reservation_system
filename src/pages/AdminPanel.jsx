@@ -1,0 +1,307 @@
+// AdminPanel.jsx
+import React, { useState, useEffect } from 'react';
+import { Tab, Tabs, Table, Button, Modal, Form, Alert } from 'react-bootstrap';
+import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import Navbar from '../components/Navbar';
+
+const AdminPanel = () => {
+  const [activeTab, setActiveTab] = useState('countries');
+  const [showModal, setShowModal] = useState(false);
+  const [modalData, setModalData] = useState({});
+  const [formData, setFormData] = useState({});
+  const [items, setItems] = useState([]);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const entityConfig = {
+    countries: {
+      fields: ['code', 'name', 'continent', 'official_language', 'is_schengen_zone_member'],
+      required: ['code', 'name'],
+      endpoint: '/countries/'
+    },
+    airports: {
+      fields: ['code', 'name', 'location', 'country_code', 'number_of_terminals'],
+      required: ['code', 'name', 'country_code'],
+      endpoint: '/airports/'
+    },
+    airlines: {
+      fields: ['name', 'iata_code', 'icao_code', 'headquarters', 'year_founded', 'base_airport_code'],
+      required: ['name', 'iata_code', 'icao_code', 'base_airport_code'],
+      endpoint: '/airlines/'
+    },
+    flights: {
+      fields: ['flight_number', 'departure_code', 'destination_code', 'departure_time', 
+               'arrival_time', 'total_seats', 'gate', 'terminal', 'airline_id', 'days_of_operation'],
+      required: ['flight_number', 'departure_code', 'destination_code', 'departure_time', 'arrival_time'],
+      endpoint: '/flights/'
+    },
+    passengers: {
+      fields: ['name', 'national_id', 'email', 'phone_number', 'nationality', 'is_vip', 
+               'address', 'date_of_birth', 'passport_number', 'gender', 'frequent_flyer_number'],
+      required: ['name', 'national_id', 'email', 'phone_number', 'nationality'],
+      endpoint: '/passengers/'
+    },
+    promotions: {
+      fields: ['promo_id', 'description', 'discount_percentage', 'start_date', 'end_date', 
+               'promo_code', 'min_purchase', 'max_discount', 'usage_limit'],
+      required: ['promo_id', 'description', 'discount_percentage', 'start_date', 'end_date'],
+      endpoint: '/promotions/'
+    }
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, [activeTab]);
+
+  const fetchItems = async () => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:8000${entityConfig[activeTab].endpoint}`);
+      setItems(response.data);
+    } catch (err) {
+      setError(`Failed to fetch ${activeTab}: ${err.response?.data?.detail || err.message}`);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    let newValue = value;
+    if (type === 'checkbox') {
+      newValue = checked;
+    }
+    // Convert datetime-local to ISO string with seconds
+    else if (type === 'datetime-local' && value) {
+      // value is "YYYY-MM-DDTHH:mm"
+      newValue = value.length === 16 ? value + ':00' : value;
+    }
+    setFormData({
+      ...formData,
+      [name]: newValue
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    // Remove empty fields and convert types as needed
+    const config = entityConfig[activeTab];
+    const dataToSend = {};
+    config.fields.forEach(field => {
+      if (formData[field] !== undefined && formData[field] !== '') {
+        // Convert string "true"/"false" to boolean for checkboxes
+        if (typeof formData[field] === 'string' && (formData[field] === 'true' || formData[field] === 'false')) {
+          dataToSend[field] = formData[field] === 'true';
+        } else {
+          dataToSend[field] = formData[field];
+        }
+      }
+    });
+    try {
+      // Use correct identifier for PUT/DELETE
+      const identifier = modalData.id || modalData.code || modalData.promo_id;
+      if (identifier) {
+        await axios.put(
+          `http://127.0.0.1:8000${entityConfig[activeTab].endpoint}${identifier}`,
+          dataToSend
+        );
+        setSuccess(`${activeTab.slice(0, -1)} updated successfully`);
+      } else {
+        await axios.post(
+          `http://127.0.0.1:8000${entityConfig[activeTab].endpoint}`,
+          dataToSend
+        );
+        setSuccess(`${activeTab.slice(0, -1)} created successfully`);
+      }
+      fetchItems();
+      setShowModal(false);
+    } catch (err) {
+        let detail = err.response?.data?.detail;
+        if (typeof detail === 'object') {
+          // FastAPI validation errors
+          detail = detail.map(d => d.msg).join('; ');
+        }
+        setError(`Operation failed: ${detail || err.message}`);
+      }
+  };
+  
+
+
+  const handleEdit = (item) => {
+    setModalData(item);
+    setFormData(item);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (idOrCodeOrPromoId) => {
+    if (window.confirm('Are you sure you want to delete this item?')) {
+      try {
+        await axios.delete(`http://127.0.0.1:8000${entityConfig[activeTab].endpoint}${idOrCodeOrPromoId}`);
+        setSuccess(`${activeTab.slice(0, -1)} deleted successfully`);
+        fetchItems();
+      } catch (err) {
+        setError(`Delete failed: ${err.response?.data?.detail || err.message}`);
+      }
+    }
+  };
+
+  const handleAddNew = () => {
+    setModalData({});
+    setFormData({});
+    setShowModal(true);
+  };
+
+  const renderTable = () => {
+    if (!items.length) return <p>No {activeTab} found</p>;
+
+    return (
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            {entityConfig[activeTab].fields.map(field => (
+              <th key={field}>{field.replace('_', ' ')}</th>
+            ))}
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {items.map(item => (
+            <tr key={item.id || item.code || item.promo_id}>
+              {entityConfig[activeTab].fields.map(field => (
+                <td key={field}>
+                  {typeof item[field] === 'boolean' ? 
+                    (item[field] ? 'Yes' : 'No') : 
+                    (field.endsWith('_time') || field.endsWith('_date')) ? 
+                    new Date(item[field]).toLocaleString() : 
+                    item[field]}
+                </td>
+              ))}
+              <td>
+                <Button variant="primary" size="sm" onClick={() => handleEdit(item)}>
+                  Edit
+                </Button>{' '}
+                <Button variant="danger" size="sm" onClick={() => handleDelete(item.id || item.code || item.promo_id)}>
+                  Delete
+                </Button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    );
+  };
+
+  const renderModal = () => {
+    const config = entityConfig[activeTab];
+    
+    return (
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>{modalData.id ? 'Edit' : 'Add New'} {activeTab.slice(0, -1)}</Modal.Title>
+        </Modal.Header>
+        <Form onSubmit={handleSubmit}>
+          <Modal.Body>
+            {config.fields.map(field => (
+              <Form.Group key={field} className="mb-3">
+                <Form.Label>
+                  {field.replace('_', ' ')}
+                  {config.required.includes(field) && <span className="text-danger">*</span>}
+                </Form.Label>
+                {field === 'is_schengen_zone_member' || field === 'is_vip' ? (
+                  <Form.Check
+                    type="checkbox"
+                    name={field}
+                    checked={formData[field] || false}
+                    onChange={handleInputChange}
+                  />
+                ) : field.endsWith('_time') || field.endsWith('_date') ? (
+                  <Form.Control
+                    type="datetime-local"
+                    name={field}
+                    value={formData[field] ? new Date(formData[field]).toISOString().slice(0, 16) : ''}
+                    onChange={handleInputChange}
+                    required={config.required.includes(field)}
+                  />
+                ) : (
+                  <Form.Control
+                    type="text"
+                    name={field}
+                    value={formData[field] || ''}
+                    onChange={handleInputChange}
+                    required={config.required.includes(field)}
+                  />
+                )}
+              </Form.Group>
+            ))}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Close
+            </Button>
+            <Button variant="primary" type="submit">
+              Save Changes
+            </Button>
+          </Modal.Footer>
+        </Form>
+      </Modal>
+    );
+  };
+
+  return (
+    <div className="container mt-4">
+      <Navbar />
+      <h2>Admin Panel</h2>
+      
+      {error && <Alert variant="danger">{error}</Alert>}
+      {success && <Alert variant="success">{success}</Alert>}
+
+      <Tabs
+        activeKey={activeTab}
+        onSelect={(k) => setActiveTab(k)}
+        className="mb-3"
+      >
+        <Tab eventKey="countries" title="Countries">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Country
+          </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="airports" title="Airports">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Airport
+          </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="airlines" title="Airlines">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Airline
+          </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="flights" title="Flights">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Flight
+          </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="passengers" title="Passengers">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Passenger
+          </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="promotions" title="Promotions">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add Promotion
+          </Button>
+          {renderTable()}
+        </Tab>
+      </Tabs>
+
+      {renderModal()}
+    </div>
+  );
+};
+
+export default AdminPanel;
