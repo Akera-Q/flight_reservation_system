@@ -172,13 +172,13 @@ const Navbar = () => {
           </button>
 
           <a className="navbar-brand ms-2" href="#" style={{ color: '#007bff' }}>
-            EGY-FLIGHT&trade;
+            EgyFly&trade;
           </a>
         </div>
         
         <Offcanvas show={showOffcanvas} onHide={handleOffcanvasClose}>
           <Offcanvas.Header closeButton>
-            <Offcanvas.Title>Egy-Flight&trade;</Offcanvas.Title>
+            <Offcanvas.Title>EgyFly&trade;</Offcanvas.Title>
           </Offcanvas.Header>
           <Offcanvas.Body>
             {/* <p className="nav-item">

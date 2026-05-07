@@ -16,7 +16,7 @@ const Modal = () => {
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="exampleModalToggleLabel">
                 <a className="navbar-brand ms-2" href="#" style={{ color: '#007bff' }}>
-                  EGY-FLIGHT&TRADE;
+                  EgyFly&TRADE;
                 </a>
               </h1>
               <button

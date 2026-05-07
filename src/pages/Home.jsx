@@ -308,7 +308,7 @@ const App = () => {
             <Col lg={4} md={6}>
               <div className="d-flex align-items-center mb-3">
                 <FaPlane className="me-2" size={24} />
-                <h4 className="mb-0 fw-bold">SkyReserve</h4>
+                <h4 className="mb-0 fw-bold">EgyFly</h4>
               </div>
 
               <p className="text-secondary">
@@ -366,7 +366,7 @@ const App = () => {
               <div className="d-flex align-items-start mb-3">
                 <FaEnvelope className="me-2 mt-1" />
                 <span className="text-secondary">
-                  support@skyreserve.com
+                  support@EgyFly.com
                 </span>
               </div>
 
@@ -406,7 +406,7 @@ const App = () => {
 
           <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
             <p className="mb-0 text-secondary">
-              © {new Date().getFullYear()} SkyReserve. All rights reserved.
+              © {new Date().getFullYear()} EgyFly. All rights reserved.
             </p>
 
             <div className="d-flex gap-3">
