@@ -43,7 +43,7 @@ const App = () => {
   ];
   return (
     <>
-    {/* <InteractionTracker /> */}
+    {/* <InteractionTracker /> */} {/*related to the heatmap generation, in server directory*/}
       <Navbar />
       <div className="parent">
         <div className="div1 photo-container">
@@ -97,177 +97,441 @@ const App = () => {
         style={{ width: "500px", border: "2px solid black" }}
       /> */}
 
-<CardGroup style={{padding: '35px 8%', border:'none', height:'280px', gap:'15px'}}>
-      <Card style={{padding: '1%', border:'1px solid grey', height:'fit-content', borderRadius:'35px'}}>
-        <Card.Body>
-          <div style={{paddingBottom:'50px'}}>
-            <i class="fa-solid fa-star" style={{color:'#FFA30F'}}></i>
-            <i class="fa-solid fa-star" style={{color:'#FFA30F'}}></i>
-            <i class="fa-solid fa-star" style={{color:'#FFA30F'}}></i>
-            <i class="fa-solid fa-star" style={{color:'#FFA30F'}}></i>
-            <i class="fa-solid fa-star" style={{color:'#FFA30F'}}></i>
+{/* ========================= RECOMMENDED FLIGHTS CAROUSEL ========================= */}
+
+<section
+  style={{
+    padding: "70px 6%",
+    background: "#f8f9fa",
+  }}
+>
+  <div className="text-center mb-5">
+    <h2
+      style={{
+        fontWeight: "700",
+        fontSize: "2.4rem",
+        color: "#212529",
+      }}
+    >
+      Recommended Flights
+    </h2>
+
+    <p
+      style={{
+        color: "#6c757d",
+        maxWidth: "650px",
+        margin: "0 auto",
+      }}
+    >
+      Explore popular destinations and travel opportunities selected for you.
+    </p>
+  </div>
+
+  <Carousel
+    data-bs-theme="dark"
+    indicators={false}
+    style={{
+      borderRadius: "28px",
+      overflow: "hidden",
+    }}
+  >
+    <Carousel.Item>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "24px",
+          padding: "10px",
+        }}
+      >
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            style={{
+              background: "white",
+              borderRadius: "28px",
+              overflow: "hidden",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+              transition: "0.3s ease",
+              border: "1px solid rgba(0,0,0,0.05)",
+            }}
+          >
+            <img
+              className="d-block w-100"
+              src="/the_old_hunter.jpg"
+              alt="First slide"
+              style={{
+                height: "260px",
+                objectFit: "cover",
+              }}
+            />
+
+            <div style={{ padding: "22px" }}>
+              <h5
+                style={{
+                  fontWeight: "700",
+                  marginBottom: "10px",
+                }}
+              >
+                Cairo → Tokyo
+              </h5>
+
+              <p
+                style={{
+                  color: "#6c757d",
+                  marginBottom: "18px",
+                }}
+              >
+                Premium experience with flexible booking and secure payment.
+              </p>
+
+              <button className="btn btn-dark px-4 rounded-pill">
+                View Deal
+              </button>
             </div>
-          <Card.Title>Customers Love Us!</Card.Title>
-          <Card.Text>
-            If downloads were negative we would have been #NO.(-1) for sure
-          </Card.Text>
-        </Card.Body>
-        {/* <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
-        </Card.Footer> */}
-      </Card>
-      <Card style={{padding: '1%', border:'1px solid grey', height:'fit-content', borderRadius:'35px'}}>
-        <Card.Body>
-          <div style={{paddingBottom:'30px'}}>
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%'}} />
-            </div>
-          <Card.Title>33,000+</Card.Title>
-          <Card.Text>
-          Searches this decade, probably gonna edit this to a counter with an actual number of searches
-          </Card.Text>
-        </Card.Body>
-        {/* <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
-        </Card.Footer> */}
-        {/*in case i need it-->  <Card.Img variant="top" src="\public\mountain-landscape-nature-trees-lake-scenery-2-4K.jpg" style={{borderRadius:'20px', height:'100px'}}/> */}
-      </Card>
-      <Card style={{padding: '1%', border:'1px solid grey', height:'fit-content', borderRadius:'35px'}}>
-      <Card.Body>
-          <div style={{paddingBottom:'30px'}}>
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%', marginRight:'-15px'}} />
-          <img src="/the_old_hunter.jpg" alt="hunter" style={{height:'45px', borderRadius:'100%'}} />
-            </div>
-          <Card.Title>Better Deals, Less Effort</Card.Title>
-          <Card.Text>
-            You're definetly easy to scam if you fall for this! Better luck next time
-          </Card.Text>
-        </Card.Body>
-        {/* <Card.Footer>
-          <small className="text-muted">Last updated 3 mins ago</small>
-        </Card.Footer> */}
-      </Card>
-    </CardGroup>
-    <Carousel data-bs-theme="dark" style={{padding:'35px 3%'}}>
-    <Carousel.Item >
-        <div style={{display:'flex', gap:'15px'}}>
-        <img
-          className="d-block w-100 testClass"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        </div>
-        
-        {/* <Carousel.Caption>
+          </div>
+        ))}
+      </div>
+
+      {/* <Carousel.Caption>
           <h5>Third slide label</h5>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
         </Carousel.Caption> */}
-      </Carousel.Item>
-      <Carousel.Item >
-        <div style={{display:'flex', gap:'15px'}}>
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        </div>
-        {/* <Carousel.Caption>
+    </Carousel.Item>
+
+    <Carousel.Item>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "24px",
+          padding: "10px",
+        }}
+      >
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            style={{
+              background: "white",
+              borderRadius: "28px",
+              overflow: "hidden",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+              transition: "0.3s ease",
+              border: "1px solid rgba(0,0,0,0.05)",
+            }}
+          >
+            <img
+              className="d-block w-100"
+              src="/the_old_hunter.jpg"
+              alt="First slide"
+              style={{
+                height: "260px",
+                objectFit: "cover",
+              }}
+            />
+
+            <div style={{ padding: "22px" }}>
+              <h5
+                style={{
+                  fontWeight: "700",
+                  marginBottom: "10px",
+                }}
+              >
+                Paris → Dubai
+              </h5>
+
+              <p
+                style={{
+                  color: "#6c757d",
+                  marginBottom: "18px",
+                }}
+              >
+                Discover top-rated flights with exclusive travel benefits.
+              </p>
+
+              <button className="btn btn-dark px-4 rounded-pill">
+                View Deal
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* <Carousel.Caption>
           <h5>Third slide label</h5>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
         </Carousel.Caption> */}
-      </Carousel.Item>
-      <Carousel.Item >
-        <div style={{display:'flex', gap:'15px'}}>
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        <img
-          className="d-block w-100"
-          src="/the_old_hunter.jpg"
-          alt="First slide"
-        />
-        </div>
-        {/* <Carousel.Caption>
+    </Carousel.Item>
+
+    <Carousel.Item>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "24px",
+          padding: "10px",
+        }}
+      >
+        {[1, 2, 3].map((item) => (
+          <div
+            key={item}
+            style={{
+              background: "white",
+              borderRadius: "28px",
+              overflow: "hidden",
+              boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+              transition: "0.3s ease",
+              border: "1px solid rgba(0,0,0,0.05)",
+            }}
+          >
+            <img
+              className="d-block w-100"
+              src="/the_old_hunter.jpg"
+              alt="First slide"
+              style={{
+                height: "260px",
+                objectFit: "cover",
+              }}
+            />
+
+            <div style={{ padding: "22px" }}>
+              <h5
+                style={{
+                  fontWeight: "700",
+                  marginBottom: "10px",
+                }}
+              >
+                London → Seoul
+              </h5>
+
+              <p
+                style={{
+                  color: "#6c757d",
+                  marginBottom: "18px",
+                }}
+              >
+                Fast booking, live tracking, and personalized recommendations.
+              </p>
+
+              <button className="btn btn-dark px-4 rounded-pill">
+                View Deal
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* <Carousel.Caption>
           <h5>Third slide label</h5>
           <p>
             Praesent commodo cursus magna, vel scelerisque nisl consectetur.
           </p>
         </Carousel.Caption> */}
-      </Carousel.Item>
-    </Carousel>
-    <CardGroup style={{gap:'20px', padding:'30px 7%'}}>
-      <Card>
-        <Card.Body>
-          <Card.Title>Explore</Card.Title>
-          <Card.Text>
-            See destinations on your budget
-          </Card.Text>
-          <Card.Img variant="bottom" src="/the_old_hunter.jpg" style={{borderRadius:'20px', height:'200px'}}/>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Body>
-          <Card.Title>Trips</Card.Title>
-          <Card.Text>
-            Keep all your plans in one place
-          </Card.Text>
-          <Card.Img variant="bottom" src="/the_old_hunter.jpg" style={{borderRadius:'20px', height:'200px'}}/>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Body>
-          <Card.Title>Price Alert</Card.Title>
-          <Card.Text>
-            Know when prices change
-          </Card.Text>
-          <Card.Img variant="bottom" src="/the_old_hunter.jpg" style={{borderRadius:'20px', height:'200px'}}/>
-        </Card.Body>
-      </Card>
-      <Card>
-        <Card.Body>
-          <Card.Title>Flight Tracker</Card.Title>
-          <Card.Text>
-            See real-time delays
-          </Card.Text>
-          <Card.Img variant="bottom" src="/the_old_hunter.jpg" style={{borderRadius:'20px', height:'200px'}}/>
-        </Card.Body>
-      </Card>
-    </CardGroup>
+    </Carousel.Item>
+  </Carousel>
+</section>
+
+{/* ========================= FEATURE / ADVERTISEMENT CARDS ========================= */}
+
+<section
+  style={{
+    padding: "70px 7%",
+    background: "white",
+  }}
+>
+  <div className="text-center mb-5">
+    <h2
+      style={{
+        fontWeight: "700",
+        fontSize: "2.3rem",
+        color: "#212529",
+      }}
+    >
+      Travel Smarter
+    </h2>
+
+    <p
+      style={{
+        color: "#6c757d",
+        maxWidth: "650px",
+        margin: "0 auto",
+      }}
+    >
+      Everything you need to manage your travel experience in one platform.
+    </p>
+  </div>
+
+  <CardGroup
+    style={{
+      gap: "25px",
+      alignItems: "stretch",
+    }}
+  >
+    <Card
+      style={{
+        border: "none",
+        borderRadius: "28px",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+        transition: "0.3s ease",
+      }}
+    >
+      <Card.Body style={{ padding: "22px" }}>
+        <Card.Title
+          style={{
+            fontWeight: "700",
+            marginBottom: "12px",
+          }}
+        >
+          Explore
+        </Card.Title>
+
+        <Card.Text
+          style={{
+            color: "#6c757d",
+            marginBottom: "20px",
+          }}
+        >
+          See destinations on your budget
+        </Card.Text>
+
+        <Card.Img
+          variant="bottom"
+          src="/the_old_hunter.jpg"
+          style={{
+            borderRadius: "22px",
+            height: "220px",
+            objectFit: "cover",
+          }}
+        />
+      </Card.Body>
+    </Card>
+
+    <Card
+      style={{
+        border: "none",
+        borderRadius: "28px",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+        transition: "0.3s ease",
+      }}
+    >
+      <Card.Body style={{ padding: "22px" }}>
+        <Card.Title
+          style={{
+            fontWeight: "700",
+            marginBottom: "12px",
+          }}
+        >
+          Trips
+        </Card.Title>
+
+        <Card.Text
+          style={{
+            color: "#6c757d",
+            marginBottom: "20px",
+          }}
+        >
+          Keep all your plans in one place
+        </Card.Text>
+
+        <Card.Img
+          variant="bottom"
+          src="/the_old_hunter.jpg"
+          style={{
+            borderRadius: "22px",
+            height: "220px",
+            objectFit: "cover",
+          }}
+        />
+      </Card.Body>
+    </Card>
+
+    <Card
+      style={{
+        border: "none",
+        borderRadius: "28px",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+        transition: "0.3s ease",
+      }}
+    >
+      <Card.Body style={{ padding: "22px" }}>
+        <Card.Title
+          style={{
+            fontWeight: "700",
+            marginBottom: "12px",
+          }}
+        >
+          Price Alert
+        </Card.Title>
+
+        <Card.Text
+          style={{
+            color: "#6c757d",
+            marginBottom: "20px",
+          }}
+        >
+          Know when prices change
+        </Card.Text>
+
+        <Card.Img
+          variant="bottom"
+          src="/the_old_hunter.jpg"
+          style={{
+            borderRadius: "22px",
+            height: "220px",
+            objectFit: "cover",
+          }}
+        />
+      </Card.Body>
+    </Card>
+
+    <Card
+      style={{
+        border: "none",
+        borderRadius: "28px",
+        overflow: "hidden",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+        transition: "0.3s ease",
+      }}
+    >
+      <Card.Body style={{ padding: "22px" }}>
+        <Card.Title
+          style={{
+            fontWeight: "700",
+            marginBottom: "12px",
+          }}
+        >
+          Flight Tracker
+        </Card.Title>
+
+        <Card.Text
+          style={{
+            color: "#6c757d",
+            marginBottom: "20px",
+          }}
+        >
+          See real-time delays
+        </Card.Text>
+
+        <Card.Img
+          variant="bottom"
+          src="/the_old_hunter.jpg"
+          style={{
+            borderRadius: "22px",
+            height: "220px",
+            objectFit: "cover",
+          }}
+        />
+      </Card.Body>
+    </Card>
+  </CardGroup>
+</section>
     {/* FAQ SECTION */}
       <section className="py-5 bg-light border-top">
         <Container>
