@@ -543,7 +543,7 @@ class Flight(Base):
     Id = 1
     def __init__(self, flight_number: str, departure_code: str, destination_code: str,
                  departure_time: datetime, arrival_time: datetime, total_seats: int, gate: str,
-                 terminal: str, airline_id: int, days_of_operation: int):
+                 terminal: str, airline_id: int = None, days_of_operation: int = None, user_id: int = None):
         self.flight_number = flight_number
         self.departure_code = departure_code
         self.destination_code = destination_code
@@ -555,6 +555,7 @@ class Flight(Base):
         self.terminal = terminal
         self.airline_id = airline_id
         self.days_of_operation = days_of_operation
+        self.user_id = user_id
 
     def generate_seats(self, session):
         """

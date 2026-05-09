@@ -283,7 +283,8 @@ def create_flight(
         db_flight = models.Flight(
             **flight.model_dump(exclude={"departure_code", "destination_code", "available_seats"}),
             departure_code=flight.departure_code.upper(),
-            destination_code=flight.destination_code.upper()
+            destination_code=flight.destination_code.upper(),
+            user_id=flight.user_id if hasattr(flight, 'user_id') and flight.user_id else None
         )
         
         db.add(db_flight)
@@ -320,10 +321,10 @@ def get_flights(
         joinedload(models.Flight.destination_airport).joinedload(models.Airport.country)
     )
 
-    if departure_code:
-        query = query.filter(models.Flight.departure_code == departure_code)
-    if destination_code:
-        query = query.filter(models.Flight.destination_code == destination_code)
+    if departure_code and departure_code.strip():
+        query = query.filter(models.Flight.departure_code == departure_code.strip().upper())
+    if destination_code and destination_code.strip():
+        query = query.filter(models.Flight.destination_code == destination_code.strip().upper())
     if departure_date:
         query = query.filter(func.date(models.Flight.departure_time) == departure_date)
 
@@ -345,31 +346,24 @@ def search_flights(
             joinedload(models.Flight.destination_airport).joinedload(models.Airport.country)
         )
         
-        # Explicit None/empty string checks
-        if departure_code and len(departure_code.strip()) >= 3:
-            query = query.filter(models.Flight.departure_code == departure_code.upper())
-            
-        if destination_code and len(destination_code.strip()) >= 3:
-            query = query.filter(models.Flight.destination_code == destination_code.upper())
-            
+        departure_code = departure_code.strip().upper() if departure_code and departure_code.strip() else None
+        destination_code = destination_code.strip().upper() if destination_code and destination_code.strip() else None
+
+        if departure_code:
+            query = query.filter(models.Flight.departure_code == departure_code)
+        if destination_code:
+            query = query.filter(models.Flight.destination_code == destination_code)
+        
         if departure_date:
             if isinstance(departure_date, str):
-                if departure_date.strip():  # Check for non-empty string
+                if departure_date.strip():
                     departure_date = datetime.strptime(departure_date, "%Y-%m-%d").date()
                 else:
                     departure_date = None
-                    
-            if departure_date:  # Final check after potential conversion
+            if departure_date:
                 query = query.filter(func.date(models.Flight.departure_time) == departure_date)
         
         flights = query.all()
-        
-        if not flights:
-            return JSONResponse(
-                status_code=404,
-                content={"detail": "No flights found"}
-            )
-            
         return flights
         
     except ValueError as e:

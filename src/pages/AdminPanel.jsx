@@ -90,12 +90,57 @@ const AdminPanel = () => {
     const dataToSend = {};
     config.fields.forEach(field => {
       if (formData[field] !== undefined && formData[field] !== '') {
-        // Convert string "true"/"false" to boolean for checkboxes
-        if (typeof formData[field] === 'string' && (formData[field] === 'true' || formData[field] === 'false')) {
-          dataToSend[field] = formData[field] === 'true';
-        } else {
-          dataToSend[field] = formData[field];
+        let value = formData[field];
+        
+        // Type conversion based on entity and field
+        if (activeTab === 'flights') {
+          if (['total_seats', 'airline_id', 'days_of_operation'].includes(field)) {
+            value = parseInt(value, 10);
+            if (isNaN(value)) {
+              setError(`Invalid number for ${field}`);
+              return;
+            }
+          }
+        } else if (activeTab === 'airports') {
+          if (field === 'number_of_terminals') {
+            value = parseInt(value, 10);
+            if (isNaN(value)) {
+              setError(`Invalid number for ${field}`);
+              return;
+            }
+          }
+        } else if (activeTab === 'airlines') {
+          if (field === 'year_founded') {
+            value = parseInt(value, 10);
+            if (isNaN(value)) {
+              setError(`Invalid number for ${field}`);
+              return;
+            }
+          }
+        } else if (activeTab === 'promotions') {
+          if (['discount_percentage', 'min_purchase', 'max_discount', 'usage_limit'].includes(field)) {
+            value = parseFloat(value);
+            if (isNaN(value)) {
+              setError(`Invalid number for ${field}`);
+              return;
+            }
+          }
+        } else if (activeTab === 'passengers') {
+          if (field === 'is_vip') {
+            value = Boolean(value);
+          }
+        } else if (activeTab === 'countries') {
+          if (field === 'is_schengen_zone_member') {
+            value = Boolean(value);
+          }
         }
+        
+        // Convert string "true"/"false" to boolean for checkboxes
+        if (typeof value === 'string' && (value === 'true' || value === 'false')) {
+          value = value === 'true';
+        }
+        
+        dataToSend[field] = value;
       }
     });
     try {

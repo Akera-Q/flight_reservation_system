@@ -103,7 +103,7 @@ class FlightCreate(FlightBase):
 
 class FlightPublic(FlightBase):
     id: int
-    user_id: int
+    user_id: Optional[int] = None
     airline: Optional[AirlinePublic] = None
     departure_airport: Optional[AirportWithCountry] = None
     destination_airport: Optional[AirportWithCountry] = None
