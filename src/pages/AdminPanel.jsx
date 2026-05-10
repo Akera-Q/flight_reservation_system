@@ -204,6 +204,7 @@ const AdminPanel = () => {
       <Table striped bordered hover>
         <thead>
           <tr>
+            {activeTab === 'airlines' && <th>ID</th>}
             {entityConfig[activeTab].fields.map(field => (
               <th key={field}>{field.replace('_', ' ')}</th>
             ))}
@@ -213,6 +214,7 @@ const AdminPanel = () => {
         <tbody>
           {items.map(item => (
             <tr key={item.id || item.code || item.promo_id}>
+              {activeTab === 'airlines' && <td>{item.id}</td>}
               {entityConfig[activeTab].fields.map(field => (
                 <td key={field}>
                   {typeof item[field] === 'boolean' ? 
