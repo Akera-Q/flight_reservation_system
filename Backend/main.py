@@ -126,6 +126,15 @@ def get_current_user(
         )
     return user
 
+
+def require_admin(current_user: models.User = Depends(get_current_user)):
+    if not getattr(current_user, 'role', None) or current_user.role.lower() != 'admin':
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail='Admin access required'
+        )
+    return current_user
+
 current_user_dependency = Annotated[models.User, Depends(get_current_user)]
 
 @app.get("/")
@@ -216,7 +225,8 @@ def register_user(user: schemas.UserCreate, db: db_dependency):
         db_user = models.User(
             username=user.username,
             email=user.email,
-            password=user.password  # Plain password
+            password=user.password,  # Plain password
+            role='User'
         )
         
         db.add(db_user)
@@ -254,6 +264,78 @@ def register_user(user: schemas.UserCreate, db: db_dependency):
 def read_current_user(current_user: models.User = Depends(get_current_user)):
     """Get current user details"""
     return current_user
+
+@app.get("/users/", response_model=List[schemas.UserPublic])
+def list_users(
+    db: db_dependency,
+    current_user: models.User = Depends(require_admin),
+    search: Optional[str] = Query(None, description="Search by username or email"),
+    skip: int = 0,
+    limit: int = 100
+):
+    query = db.query(models.User)
+    if search:
+        search_pattern = f"%{search}%"
+        query = query.filter(
+            models.User.username.contains(search) | models.User.email.contains(search)
+        )
+    return query.offset(skip).limit(limit).all()
+
+@app.post("/users/", response_model=schemas.UserPublic)
+def create_user(
+    user: schemas.UserAdminCreate,
+    db: db_dependency,
+    current_user: models.User = Depends(require_admin)
+):
+    existing_user = db.query(models.User).filter(
+        (models.User.username == user.username) | (models.User.email == user.email)
+    ).first()
+    if existing_user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username or email already registered"
+        )
+    db_user = models.User(
+        username=user.username,
+        email=user.email,
+        password=user.password,
+        role=user.role or 'User'
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@app.put("/users/{user_id}", response_model=schemas.UserPublic)
+def update_user(
+    user_id: int,
+    user_update: schemas.UserUpdate,
+    db: db_dependency,
+    current_user: models.User = Depends(require_admin)
+):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    if user_update.role is not None:
+        db_user.role = user_update.role
+    if user_update.is_active is not None:
+        db_user.is_active = user_update.is_active
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+@app.delete("/users/{user_id}")
+def delete_user(
+    user_id: int,
+    db: db_dependency,
+    current_user: models.User = Depends(require_admin)
+):
+    db_user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not db_user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    db.delete(db_user)
+    db.commit()
+    return {"detail": "User deleted"}
 
 # Flight Endpoints
 @app.post("/flights", response_model=schemas.FlightPublic)

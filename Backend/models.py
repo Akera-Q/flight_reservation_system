@@ -144,14 +144,16 @@ class User(Base):
     email = Column(String, unique=True, index=True)
     salt = Column(String)
     hashed_password = Column(String)
+    role = Column(String, default='User', nullable=False)
     is_active = Column(Boolean, default=True)
 
     flights = relationship("Flight", back_populates="user")
 
-    def __init__(self, username: str, email: str, password: str = None, hashed_password: str = None, salt: str = None):
+    def __init__(self, username: str, email: str, password: str = None, hashed_password: str = None, salt: str = None, role: str = "User"):
         self.username = username
         self.email = email
         self.is_active = True
+        self.role = role or "User"
         
         # Handle both plain password and pre-hashed password cases
         if password:

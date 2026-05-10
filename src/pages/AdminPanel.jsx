@@ -1,7 +1,7 @@
 // AdminPanel.jsx
 import React, { useState, useEffect } from 'react';
 import { Tab, Tabs, Table, Button, Modal, Form, Alert } from 'react-bootstrap';
-import axios from 'axios';
+import { api } from '../services/API';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Navbar from '../components/Navbar';
 
@@ -13,6 +13,7 @@ const AdminPanel = () => {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const entityConfig = {
     countries: {
@@ -47,16 +48,28 @@ const AdminPanel = () => {
                'promo_code', 'min_purchase', 'max_discount', 'usage_limit'],
       required: ['promo_id', 'description', 'discount_percentage', 'start_date', 'end_date'],
       endpoint: '/promotions/'
+    },
+    users: {
+      fields: ['username', 'email', 'role', 'is_active'],
+      required: ['username', 'email'],
+      endpoint: '/users/'
     }
   };
 
   useEffect(() => {
+    if (activeTab !== 'users') {
+      setSearchTerm('');
+    }
     fetchItems();
-  }, [activeTab]);
+  }, [activeTab, searchTerm]);
 
   const fetchItems = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000${entityConfig[activeTab].endpoint}`);
+      let url = entityConfig[activeTab].endpoint;
+      if (activeTab === 'users' && searchTerm) {
+        url += `?search=${encodeURIComponent(searchTerm)}`;
+      }
+      const response = await api.get(url);
       setItems(response.data);
     } catch (err) {
       setError(`Failed to fetch ${activeTab}: ${err.response?.data?.detail || err.message}`);
@@ -147,14 +160,14 @@ const AdminPanel = () => {
       // Use correct identifier for PUT/DELETE
       const identifier = modalData.id || modalData.code || modalData.promo_id;
       if (identifier) {
-        await axios.put(
-          `http://127.0.0.1:8000${entityConfig[activeTab].endpoint}${identifier}`,
+        await api.put(
+          `${entityConfig[activeTab].endpoint}${identifier}`,
           dataToSend
         );
         setSuccess(`${activeTab.slice(0, -1)} updated successfully`);
       } else {
-        await axios.post(
-          `http://127.0.0.1:8000${entityConfig[activeTab].endpoint}`,
+        await api.post(
+          entityConfig[activeTab].endpoint,
           dataToSend
         );
         setSuccess(`${activeTab.slice(0, -1)} created successfully`);
@@ -182,7 +195,7 @@ const AdminPanel = () => {
   const handleDelete = async (idOrCodeOrPromoId) => {
     if (window.confirm('Are you sure you want to delete this item?')) {
       try {
-        await axios.delete(`http://127.0.0.1:8000${entityConfig[activeTab].endpoint}${idOrCodeOrPromoId}`);
+        await api.delete(`${entityConfig[activeTab].endpoint}${idOrCodeOrPromoId}`);
         setSuccess(`${activeTab.slice(0, -1)} deleted successfully`);
         fetchItems();
       } catch (err) {
@@ -255,12 +268,30 @@ const AdminPanel = () => {
                   {field.replace('_', ' ')}
                   {config.required.includes(field) && <span className="text-danger">*</span>}
                 </Form.Label>
-                {field === 'is_schengen_zone_member' || field === 'is_vip' ? (
+                {field === 'is_schengen_zone_member' || field === 'is_vip' || field === 'is_active' ? (
                   <Form.Check
                     type="checkbox"
                     name={field}
-                    checked={formData[field] || false}
+                    checked={Boolean(formData[field])}
                     onChange={handleInputChange}
+                  />
+                ) : field === 'role' ? (
+                  <Form.Select
+                    name="role"
+                    value={formData.role || 'User'}
+                    onChange={handleInputChange}
+                    required={config.required.includes(field)}
+                  >
+                    <option value="User">User</option>
+                    <option value="Admin">Admin</option>
+                  </Form.Select>
+                ) : field === 'password' ? (
+                  <Form.Control
+                    type="password"
+                    name="password"
+                    value={formData[field] || ''}
+                    onChange={handleInputChange}
+                    required={!modalData.id && config.required.includes(field)}
                   />
                 ) : field.endsWith('_time') || field.endsWith('_date') ? (
                   <Form.Control
@@ -336,6 +367,21 @@ const AdminPanel = () => {
           <Button variant="success" onClick={handleAddNew} className="mb-3">
             Add Passenger
           </Button>
+          {renderTable()}
+        </Tab>
+        <Tab eventKey="users" title="Users">
+          <Button variant="success" onClick={handleAddNew} className="mb-3">
+            Add User
+          </Button>
+          <Form.Group className="mb-3" controlId="userSearch">
+            <Form.Label>Search users</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Search by username or email"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Form.Group>
           {renderTable()}
         </Tab>
         <Tab eventKey="promotions" title="Promotions">

@@ -31,6 +31,14 @@ class UserCreate(UserBase):
 class UserPublic(UserBase):
     id: int
     is_active: bool
+    role: str
+
+class UserUpdate(BaseModel):
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+
+class UserAdminCreate(UserCreate):
+    role: Optional[str] = "User"
 
 # Country Schema (new)
 class CountryBase(BaseModel):

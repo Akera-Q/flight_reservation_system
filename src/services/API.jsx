@@ -11,6 +11,8 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+export { api };
+
 // Helper: Standardize errors
 const handleError = (error) => {
   const message = error.response?.data?.detail || error.message;
