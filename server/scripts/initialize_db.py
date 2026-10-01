@@ -1,33 +1,12 @@
-import sqlite3
 import os
+import sys
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from app.models import init_db
 
 def create_db():
-    # Get the correct absolute path for the database file
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # This gets 'server/scripts'
-    DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../app/database.db"))  # Moves up to 'server/app'
-
-    print(f"📂 Database Path: {DB_PATH}")  # Debugging step
-
-    try:
-        conn = sqlite3.connect(DB_PATH)  # Uses correct absolute path
-        c = conn.cursor()
-
-        # Create the interactions table if it doesn't exist
-        c.execute('''
-        CREATE TABLE IF NOT EXISTS interactions (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            x INTEGER NOT NULL,
-            y INTEGER NOT NULL,
-            event TEXT NOT NULL
-        )
-        ''')
-
-        conn.commit()
-        conn.close()
-        print("✅ Database and table created successfully!")
-    
-    except sqlite3.OperationalError as e:
-        print(f"❌ Error: {e}")
+    init_db()
+    print("Database and interactions table created successfully!")
 
 if __name__ == "__main__":
     create_db()

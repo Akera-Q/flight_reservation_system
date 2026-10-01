@@ -16,22 +16,11 @@ from models import (
     Luggage,
     Loyalty_program
 )
-from sqlalchemy import text
 from sqlalchemy.orm import sessionmaker
 
 def init_db():
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)
-
-    #code block for adding missing role column to users table and creating default admin user if no users exist
-    print("Applying user schema migration...")
-    with engine.connect() as conn:
-        pragma = conn.execute(text("PRAGMA table_info(users)"))
-        columns = [row[1] for row in pragma.fetchall()]
-        if 'role' not in columns:
-            print("Adding missing role column to users table...")
-            conn.execute(text("ALTER TABLE users ADD COLUMN role VARCHAR NOT NULL DEFAULT 'User'"))
-            conn.execute(text("UPDATE users SET role='User' WHERE role IS NULL"))
 
     SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = SessionLocal()

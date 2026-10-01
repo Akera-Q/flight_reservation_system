@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+SQLAlchemy
+psycopg[binary]
+python-jose[cryptography]
+python-multipart
+pytz
+multipledispatch
+Pillow
+Flask
+flask-cors
+numpy
+scipy
+seaborn
+matplotlib

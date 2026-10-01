@@ -1,21 +1,22 @@
 import os
-import sqlite3
+import sys
 import numpy as np
 import scipy.ndimage
 import seaborn as sns
 import matplotlib.pyplot as plt
+from sqlalchemy import select
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from app.models import engine, interactions
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.abspath(os.path.join(BASE_DIR, "../app/database.db"))
 STATIC_PATH = os.path.abspath(os.path.join(BASE_DIR, "../static/heatmap.png"))
 
 def fetch_data():
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('SELECT x, y FROM interactions WHERE event="click"')
-    clicks = c.fetchall()
-    conn.close()
-    return clicks
+    with engine.connect() as connection:
+        return connection.execute(
+            select(interactions.c.x, interactions.c.y).where(interactions.c.event == "click")
+        ).all()
 
 def generate_heatmap(clicks):
     heatmap_width = 1920  

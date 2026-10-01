@@ -5,9 +5,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from database import SessionLocal, engine, Base
 from models import Country, Airport, Airline, User, Flight
 
-DATABASE_PATH = "flight_reservation.db"
-
-
 def init_db() -> None:
     print("Creating database tables...")
     Base.metadata.create_all(bind=engine)

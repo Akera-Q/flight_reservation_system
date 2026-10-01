@@ -10,7 +10,7 @@ A full-stack web application for booking and managing flight reservations. Built
 - **Reservation Management**: View and manage booked flights
 - **Admin Panel**: Administrative functions for managing flights, passengers, and data
 - **Real-time Updates**: CORS-enabled API for seamless frontend-backend communication
-- **Database Integration**: SQLite database with SQLAlchemy ORM
+- **Database Integration**: PostgreSQL database with SQLAlchemy ORM
 - **Responsive Design**: Modern React UI with CSS styling
 
 ## Tech Stack
@@ -27,7 +27,7 @@ A full-stack web application for booking and managing flight reservations. Built
 
 - FastAPI (Python web framework)
 - SQLAlchemy (ORM)
-- SQLite (database)
+- PostgreSQL (database)
 - JWT (authentication)
 - Pydantic (data validation)
 - Uvicorn (ASGI server)
@@ -35,6 +35,7 @@ A full-stack web application for booking and managing flight reservations. Built
 ## Prerequisites
 
 - Python 3.8+
+- PostgreSQL 13+
 - Node.js 16+
 - npm or yarn
 
@@ -57,6 +58,14 @@ A full-stack web application for booking and managing flight reservations. Built
    ```
 
 3. **Database Initialization**
+
+   Create a PostgreSQL database named `flight_reservation`, then set the connection URL before starting either backend. In PowerShell:
+
+   ```powershell
+   $env:DATABASE_URL = "postgresql+psycopg://postgres:your-password@localhost:5432/flight_reservation"
+   ```
+
+   Replace the username, password, host, port, and database name with your PostgreSQL settings. The FastAPI startup creates the schema from the current models; existing SQLite data is not imported.
 
    ```bash
    python db_init.py
